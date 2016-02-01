@@ -1,3 +1,4 @@
+var _ = require("underscore");
 var express = require("express");
 var bodyparser = require("body-parser");
 var app = express();
@@ -12,6 +13,8 @@ var users = {};
 app.use(bodyparser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+
+app.use(express.static(path.join(config.dirs.root, "bower_components")));
 
 app.get("/:id", function(req, res){
 	var id = req.params.id;
@@ -28,15 +31,23 @@ app.get("/:id", function(req, res){
 io.on("connection", function(socket) {
 	var id = "";
 
-	do {
-		id = randomString(5);
-	} while(typeof users[id] !== "undefined");
+	socket.on("start", function(data) {
+		if(_.isUndefined(data.apiKey)) {
+			socket.emit("error", "Invalid key provided");
+			return;
+		}
 
-	users[id] = {};
+		do {
+			id = randomString(5);
+		} while(typeof users[id] !== "undefined");
 
-	socket.emit("identify", { id:id });
+		users[id] = {};
 
-	console.log("User (" +id+ ") has connected");
+		socket.emit("identify", { id:id });
+
+		console.log("User (" +id+ ") has connected");
+	});
+	
 	socket.on("disconnect", function() {
 		console.log("Users (" +id+ ") has disconnected");
 		delete users[id];
