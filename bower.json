@@ -1,0 +1,24 @@
+{
+  "name": "syncserver",
+  "description": "Testing server for iOS SyncServer library",
+  "main": "app.js",
+  "authors": [
+    "ALJCepeda"
+  ],
+  "license": "BSD-2-Clause",
+  "homepage": "http://aljcepeda.com",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "socket.io": "~1.4.5",
+    "underscore": "^1.8.3",
+    "knockout": "^3.4.0"
+  }
+}
