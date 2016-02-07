@@ -38,12 +38,14 @@ io.on("connection", function(socket) {
 		}
 
 		do {
-			id = randomString(5);
+			//id = randomString(5);
+			id = "test";
 		} while(typeof users[id] !== "undefined");
 
 		users[id] = {};
 
 		socket.emit("identify", { id:id });
+		socket.emit("data", { message:"Successfully Connected!"});
 
 		console.log("User (" +id+ ") has connected");
 	});
@@ -52,6 +54,12 @@ io.on("connection", function(socket) {
 		console.log("Users (" +id+ ") has disconnected");
 		delete users[id];
 	});
+
+	socket.on("data", function(data) {
+		console.log(data);
+	});
+
+	//socket.on("")
 });
 
 function randomString(length) {
