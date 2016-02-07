@@ -11,14 +11,50 @@
 </head>
 
 <style type="text/css">
+	#inputBox {
+		width:80%;
+	}
 
+	#fromDeviceContainer {
+		width:100%;
+		height:40%;
+	}
+
+	#toDeviceContainer {
+		width:100%;
+		height:40%;
+	}
 </style>
 
 <body id="bodyContainer">
 	<form>
 		<input id="inputBox" type="text"></input>
-		<input id="submit" type="button">Submit</input>
+		<input id="submit" type="button" value="Submit"></input>
 	</form>
+
+	<div id="fromDeviceContainer">
+		<h2>From Device:</h2>
+		<ul data-bind="foreach:fromDevice">
+			<li><span data-bind="text: $data"></span></li>
+		</ul>
+	</div>
+
+	<div id="toDeviceContainer">
+		<h2>To Device:</h2>
+		<ul data-bind="foreach:toDevice">
+			<li><span data-bind="text: $data"></span></li>
+		</ul>
+	</div>
 </body>
+
+<script type="text/javascript">
+	var fromDevice = ko.observable([ "This message came from the mobile device" ]);
+	var toDevice = ko.observable([ "This message was sent to the mobile device" ]);
+
+	ko.applyBindings({
+		fromDevice:fromDevice,
+		toDevice:toDevice
+	}, document.getElementById("bodyContainer"));
+</script>
 
 </html>
