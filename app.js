@@ -8,7 +8,9 @@ var io = require("socket.io")(http);
 var crypto = require("crypto");
 
 var config = require("./config");
-var users = {};
+var BrowserSession = require("./resources/browsersession");
+var DeviceSession = require("./resources/devicesession");
+var Users = require("./resources/users");
 
 app.use(bodyparser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -16,10 +18,11 @@ app.use(bodyparser.urlencoded({     // to support URL-encoded bodies
 
 app.use(express.static(path.join(config.dirs.root, "bower_components")));
 
+var users = new Users();
 app.get("/:id", function(req, res){
 	var id = req.params.id;
 
-	if(typeof id === "undefined" || typeof users[id] === "undefined") {
+	if(typeof id === "undefined" || users.has(id) === false) {
 		res.status("404").send("Invalid identity");
 		return;
 	}
@@ -27,43 +30,30 @@ app.get("/:id", function(req, res){
 	res.sendFile(path.join(config.dirs.root, "client","index.html"));
 });
 
-
 io.on("connection", function(socket) {
-	var id = "";
+	socket.on("startBrowser", function(data) {
+		var id = data.id;
+		if(_.isUndefined(id) || users.has(id) === false) {
+			socket.emit("error", "Invalid ID provided");
+			return;
+		}
 
-	socket.on("start", function(data) {
-		if(_.isUndefined(data.apiKey)) {
+		var user = users.get(id);
+		user.browser = new BrowserSession(user.id, socket);
+		user.start();
+	});
+
+	socket.on("startDevice", function(data) {
+		var key = data.apiKey;
+		if(_.isUndefined(key) || key !== config.apiKey) {
 			socket.emit("error", "Invalid key provided");
 			return;
 		}
 
-		do {
-			//id = randomString(5);
-			id = "test";
-		} while(typeof users[id] !== "undefined");
-
-		users[id] = {};
-
-		socket.emit("identify", { id:id });
-		socket.emit("data", { message:"Successfully Connected!"});
-
-		console.log("User (" +id+ ") has connected");
+		var user = users.spawn();
+		user.device = new DeviceSession(user.id, socket);
+		socket.emit("identify", { id:user.id });
 	});
-	
-	socket.on("disconnect", function() {
-		console.log("Users (" +id+ ") has disconnected");
-		delete users[id];
-	});
-
-	socket.on("data", function(data) {
-		console.log(data);
-	});
-
-	//socket.on("")
 });
-
-function randomString(length) {
-	return Math.random().toString(36).substring(length);
-}
 
 http.listen(config.port, function() { console.log("listening on *:" + config.port); }); 

@@ -51,6 +51,9 @@
 	var fromDevice = ko.observable([ "This message came from the mobile device" ]);
 	var toDevice = ko.observable([ "This message was sent to the mobile device" ]);
 
+	var socket = io();
+	socket.emit("startBrowser", { id:"test" });
+
 	ko.applyBindings({
 		fromDevice:fromDevice,
 		toDevice:toDevice
