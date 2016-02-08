@@ -17,19 +17,19 @@ UserSession.prototype.start = function(){
 UserSession.prototype.sync = function() {
 	this.device.data = function(data) {
 		this.browser.socket.emit("data", data);
-	};
+	}.bind(this);
 
 	this.device.disconnect = function() {
 		this.browser.socket.emit("data", { message:"Your iOS device was disconnected from the server" });
-	};
+	}.bind(this);
 
 	this.browser.data = function(data) {
 		this.device.socket.emit("data", data);
-	};
+	}.bind(this);
 
 	this.browser.disconnect = function() {
 		this.device.socket.emit("data", { message:"Your browser was disconnected from the server" });
-	};
+	}.bind(this);
 };
 
 UserSession.prototype.id = function(id) {
