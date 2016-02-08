@@ -48,16 +48,43 @@
 </body>
 
 <script type="text/javascript">
-	var fromDevice = ko.observable([ "This message came from the mobile device" ]);
-	var toDevice = ko.observable([ "This message was sent to the mobile device" ]);
-
+	var fromDevice = ko.observableArray([]);
+	var toDevice = ko.observableArray([]);
+	var inputBox = document.getElementById("inputBox");
 	var socket = io();
-	socket.emit("startBrowser", { id:"test" });
+
+	function submitMessage() {
+		var message = inputBox.value;
+		
+		if(message !== "") {
+			socket.emit("data", {
+				message:message
+			});
+
+			inputBox.value = "";
+		}
+	}
+
+	document.getElementById("submit").onclick = function() {
+		submitMessage();
+	};
+
+	document.onkeyup = function() {
+		if(window.event.keyCode === 13 && document.activeElement === inputBox) {
+			submitMessage();
+		}
+	};
 
 	ko.applyBindings({
 		fromDevice:fromDevice,
 		toDevice:toDevice
 	}, document.getElementById("bodyContainer"));
+
+	socket.on("data", function(data) {
+		fromDevice.push(data.message);
+	});
+
+	socket.emit("startBrowser", { id:"test" });
 </script>
 
 </html>

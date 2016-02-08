@@ -4,7 +4,7 @@ function BrowserSession(id, socket) {
 };
 
 BrowserSession.prototype.start = function() {
-	this.socket.emit("data", { message:"Successfully Connected!"});
+	this.socket.emit("data", { message:"Successfully connected to server!"});
 	this.socket.on("data", function(data) {
 		this.data(data);
 	}.bind(this));

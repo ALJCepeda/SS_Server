@@ -9,6 +9,9 @@ UserSession.prototype.start = function(){
 
 	this.device.start();
 	this.browser.start();
+
+	this.device.socket.emit("data", { message:"Browser has been synced with device" });
+	this.browser.socket.emit("data", { message:"Device has been synced with browser" });
 };
 
 UserSession.prototype.sync = function() {
@@ -16,8 +19,16 @@ UserSession.prototype.sync = function() {
 		this.browser.socket.emit("data", data);
 	};
 
+	this.device.disconnect = function() {
+		this.browser.socket.emit("data", { message:"Your iOS device was disconnected from the server" });
+	};
+
 	this.browser.data = function(data) {
 		this.device.socket.emit("data", data);
+	};
+
+	this.browser.disconnect = function() {
+		this.device.socket.emit("data", { message:"Your browser was disconnected from the server" });
 	};
 };
 
