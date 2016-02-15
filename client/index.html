@@ -18,23 +18,34 @@
 	}
 
 	.infopanel {
-		width:50%;
+		width:100%;
+		margin-top:20px;
+	}
+
+	.aside {
+		flex:1 50%;
 	}
 </style>
 
-<body>
+<body style="min-height: 100%">
 	<input id="inputBox" type="text"></input>
 	<input id="submit" type="button" value="Submit"></input>
 
+	<div class="infopanel">
+		X: <label data-bind="text:accel_x"></label><br>
+		Y: <label data-bind="text:accel_y"></label><br>
+		Z: <label data-bind="text:accel_z"></label><br>
+	</div>
+
 	<div class="row-nw m-between">
-		<div class="infopanel aside">
+		<div class="aside">
 			<h2>From Device:</h2>
 			<ul data-bind="foreach:fromDevice">
 				<li><span data-bind="text: $data"></span></li>
 			</ul>
 		</div>
 
-		<div class="infopanel aside">
+		<div class="aside">
 			<h2>To Device:</h2>
 			<ul data-bind="foreach:toDevice">
 				<li><span data-bind="text: $data"></span></li>
@@ -46,6 +57,10 @@
 <script type="text/javascript">
 	var fromDevice = ko.observableArray([]);
 	var toDevice = ko.observableArray([]);
+	var accel_x = ko.observable(0);
+	var accel_y = ko.observable(0);
+	var accel_z = ko.observable(0);
+
 	var inputBox = document.getElementById("inputBox");
 	var socket = io();
 
@@ -73,11 +88,28 @@
 
 	ko.applyBindings({
 		fromDevice:fromDevice,
-		toDevice:toDevice
+		toDevice:toDevice,
+		accel_x:accel_x,
+		accel_y:accel_y,
+		accel_z:accel_z,
 	}, document.getElementById("bodyContainer"));
 
 	socket.on("data", function(data) {
 		fromDevice.push(data.message);
+	});
+
+	socket.on("acceleration", function(data) {
+		if(typeof data.x !== "undefined") {
+			accel_x(data.x);
+		}
+
+		if(typeof data.y !== "undefined") {
+			accel_x(data.y);
+		}
+
+		if(typeof data.z !== "undefined") {
+			accel_x(data.z);
+		}		
 	});
 
 	socket.emit("startBrowser", { id:"test" });
