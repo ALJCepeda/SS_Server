@@ -17,6 +17,7 @@ app.use(bodyparser.urlencoded({     // to support URL-encoded bodies
 }));
 
 app.use(express.static(path.join(config.dirs.root, "bower_components")));
+app.use(express.static(path.join(config.dirs.root, "client", "assets")));
 
 var users = new Users();
 app.get("/:id", function(req, res){
