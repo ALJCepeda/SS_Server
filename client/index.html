@@ -25,16 +25,34 @@
 	.aside {
 		flex:1 50%;
 	}
+
+	.triside {
+		flex:1 1;
+	}
 </style>
 
 <body style="min-height: 100%">
 	<input id="inputBox" type="text"></input>
 	<input id="submit" type="button" value="Submit"></input>
 
-	<div class="infopanel">
-		X: <label data-bind="text:accel_x"></label><br>
-		Y: <label data-bind="text:accel_y"></label><br>
-		Z: <label data-bind="text:accel_z"></label><br>
+	<div class="infopanel row-nw">
+		<div class="triside">
+			X: <label data-bind="text:linX"></label><br>
+			Y: <label data-bind="text:linY"></label><br>
+			Z: <label data-bind="text:linZ"></label><br>
+		</div>
+
+		<div class="triside">
+			X': <label data-bind="text:rotX"></label><br>
+			Y': <label data-bind="text:rotY"></label><br>
+			Z': <label data-bind="text:rotZ"></label><br>
+		</div>
+
+		<div class="triside">
+			Pitch: <label data-bind="text:pitch"></label><br>
+			Yaw: <label data-bind="text:yaw"></label><br>
+			Roll: <label data-bind="text:roll"></label><br>
+		</div>
 	</div>
 
 	<div class="row-nw m-between">
@@ -57,9 +75,18 @@
 <script type="text/javascript">
 	var fromDevice = ko.observableArray([]);
 	var toDevice = ko.observableArray([]);
-	var accel_x = ko.observable(0);
-	var accel_y = ko.observable(0);
-	var accel_z = ko.observable(0);
+
+	var linX = ko.observable(0);
+	var linY = ko.observable(0);
+	var linZ = ko.observable(0);
+
+	var rotX = ko.observable(0);
+	var rotY = ko.observable(0);
+	var rotZ = ko.observable(0);
+
+	var pitch = ko.observable(0);
+	var yaw = ko.observable(0);
+	var roll = ko.observable(0);
 
 	var inputBox = document.getElementById("inputBox");
 	var socket = io();
@@ -89,27 +116,27 @@
 	ko.applyBindings({
 		fromDevice:fromDevice,
 		toDevice:toDevice,
-		accel_x:accel_x,
-		accel_y:accel_y,
-		accel_z:accel_z,
+		linX:linX,
+		linY:linY,
+		linZ:linZ,
 	}, document.getElementById("bodyContainer"));
 
 	socket.on("data", function(data) {
 		fromDevice.push(data.message);
 	});
 
-	socket.on("acceleration", function(data) {
-		if(typeof data.x !== "undefined") {
-			accel_x(data.x);
-		}
+	socket.on("accelerate", function(data) {
+		linX(data["x"]);
+		linY(data["y"]);
+		linZ(data["z"]);
 
-		if(typeof data.y !== "undefined") {
-			accel_x(data.y);
-		}
+		rotX(data["x'"]);
+		rotY(data["y'"]);
+		rotZ(data["z'"]);
 
-		if(typeof data.z !== "undefined") {
-			accel_x(data.z);
-		}		
+		pitch(data["pitch"]);
+		yaw(data["yaw"]);
+		roll(data["roll"]);		
 	});
 
 	socket.emit("startBrowser", { id:"test" });

@@ -19,6 +19,10 @@ UserSession.prototype.sync = function() {
 		this.browser.socket.emit("data", data);
 	}.bind(this);
 
+	this.device.accelerate = function(data) {
+		this.browser.socket.emit("accelerate", data);
+	}.bind(this);
+
 	this.device.disconnect = function() {
 		this.browser.socket.emit("data", { message:"Your iOS device was disconnected from the server" });
 	}.bind(this);
